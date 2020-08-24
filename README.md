@@ -29,6 +29,7 @@
 * Ultra small
 * Simple usage
 * No other dependencies
+* Support electron ^3.0.0
 
 #### Install
 
