@@ -71,6 +71,7 @@
       return {
         fullPath: process.env.NODE_ENV === 'production' ? path.resolve(__dirname, './node_modules/electron-vue-printer/render.html') : path.join(__dirname, 'render.html'),
         deviceNamePrint: '',
+        electronVersion: process.versions.electron,
         srcData: '',
         printerList: [],
         rotateTypeData: [
@@ -91,7 +92,10 @@
       /**
        * 初始化webview
        */
-      webviewInit () {
+      webviewInit() {
+        if(/^4\./.test(this.electronVersion)) {
+          throw new Error('Does not support electron v4')
+        }
         const webview = this.$refs.printWebview
         webview.addEventListener('dom-ready', () => {
           // webview.openDevTools()
@@ -101,7 +105,7 @@
           if (event.channel === 'webview-render-finish') {
             this.$emit('webview-render-finish')
             // 如果electron版本号为v6及以下，则可以使用回调参数
-            if (/^[1-6]{1}\./.test(process.versions.electron)) {
+            if (/^[1-4]{1}\./.test(this.electronVersion)) {
               webview.print(
                 {
                   silent: this.silent,
@@ -112,6 +116,26 @@
                   this.$emit('start-printing', state)
                 },
               )
+            } else if (/^5\./.test(this.electronVersion)) {
+              webview.print(
+                {
+                  silent: this.silent,
+                  printBackground: true,
+                  deviceName: ''
+                },
+                (state) => {
+                  this.$emit('start-printing', state)
+                },
+              )
+            } else if (/^6\./.test(this.electronVersion)) {
+              webview.print(
+                {
+                  silent: this.silent,
+                  printBackground: true,
+                  deviceName: ''
+                },
+              )
+              this.$emit('start-printing', true)
             } else {
               webview.print(
                 {
@@ -165,6 +189,9 @@
        * @param name callBack
        */
       setPrinterName(name, callBack) {
+        if (/^[5-6]{1}\./.test(this.electronVersion)) {
+          throw new Error('Electron v5 or v6 does not support setting the printer name.Only use the default name')
+        }
         const names = this.printerList.map((e) => {
           return e.name
         })

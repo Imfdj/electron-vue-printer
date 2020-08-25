@@ -30,6 +30,11 @@
 * Simple usage
 * No other dependencies
 
+### Hint
+* Version number: v3.1.13、 v7.3.2、 v8.5.0、 v9.2.1 perfectly usable.The corresponding minor version number should be the same.
+* Version number: v5.0.13、 v6.1.12 is available, but only the default printer can be used.The corresponding minor version number should be the same.
+* Version v4 has various problems, so support is dropped.
+
 #### Installation
 
 ``` bash
