@@ -29,9 +29,8 @@
 * Ultra small
 * Simple usage
 * No other dependencies
-* Support electron ^3.0.0
 
-#### Install
+#### Installation
 
 ``` bash
 npm install electron-vue-printer -S
@@ -68,16 +67,16 @@ index.vue -->
   }
 </script>
 ```
-| Configuration      | Description
-| -------------- | ----------- |
-| `options`  | `options.offsetX: number. Left the offset,default 0.` |
-|            | `options.offsetY: number. Top the offset,default 0.` |
-|            | `options.imageWidth: number. Width of picture.` |
-|            | `options.imageHeight: number. Height of picture.` |
-| `rotateType`  | `Image rotation direction. 0: normal;1: Clockwise;2: Counterclockwise;3: Upside down;default 0.` |
-| `imgStyle`  | `Customize image styles.Width and height can override options.imageWidth and options.imageHeight.Transform will cause rotateType to become invalid;.` |
-| `show`  | `Whether to display preview.default: false.` |
-| `silent`  | `Whether to enable silent printing.default: false.` |
+| Configuration | Type  |Default| Description
+| ------------- | ----- | ----- | ----------- |
+| `options`    | object |       | `options.offsetX: number. Left the offset,default 0.` |
+|              |        |       | `options.offsetY: number. Top the offset,default 0.` |
+|              |        |       | `options.imageWidth: number. Width of picture.` |
+|              |        |       | `options.imageHeight: number. Height of picture.` |
+| `rotateType` | number |   0   | `Image rotation direction. 0: normal;1: Clockwise;2: Counterclockwise;3: Upside down.` |
+| `imgStyle`   | string |       | `Customize image styles.Width and height can override options.imageWidth and options.imageHeight.Transform will cause rotateType to become invalid;.` |
+| `show`       | boolean| false | `Whether to display preview..` |
+| `silent`     | boolean| false | `Whether to enable silent printing.` |
 
 
 | Events            | Description

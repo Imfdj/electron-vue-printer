@@ -69,7 +69,7 @@
     },
     data() {
       return {
-        fullPath: process.env.NODE_ENV === 'production' ? 'node_modules/electron-vue-printer/render.html' : path.join(__dirname, 'render.html'),
+        fullPath: process.env.NODE_ENV === 'production' ? path.resolve(__dirname, './node_modules/electron-vue-printer/render.html') : path.join(__dirname, 'render.html'),
         deviceNamePrint: '',
         srcData: '',
         printerList: [],
@@ -85,28 +85,51 @@
       this.getPrinterList();
     },
     mounted() {
-      const webview = this.$refs.printWebview;
-      webview.addEventListener('dom-ready', () => {
-        // webview.openDevTools()
-        this.$emit('webview-ready', webview)
-      })
-      webview.addEventListener('ipc-message', (event) => {
-        if (event.channel === 'webview-render-finish') {
-          this.$emit('webview-render-finish')
-          webview.print(
-            {
-              silent: this.silent,
-              printBackground: true,
-              deviceName: this.deviceNamePrint
-            },
-            (state) => {
-              this.$emit('start-printing', state);
-            },
-          )
-        }
-      })
+      this.webviewInit()
     },
     methods: {
+      /**
+       * 初始化webview
+       */
+      webviewInit () {
+        const webview = this.$refs.printWebview
+        webview.addEventListener('dom-ready', () => {
+          // webview.openDevTools()
+          this.$emit('webview-ready', webview)
+        })
+        webview.addEventListener('ipc-message', (event) => {
+          if (event.channel === 'webview-render-finish') {
+            this.$emit('webview-render-finish')
+            // 如果electron版本号为v6及以下，则可以使用回调参数
+            if (/^[1-6]{1}\./.test(process.versions.electron)) {
+              webview.print(
+                {
+                  silent: this.silent,
+                  printBackground: true,
+                  deviceName: this.deviceNamePrint
+                },
+                (state) => {
+                  this.$emit('start-printing', state)
+                },
+              )
+            } else {
+              webview.print(
+                {
+                  silent: this.silent,
+                  printBackground: true,
+                  deviceName: this.deviceNamePrint
+                },
+              ).then(() => {
+                this.$emit('start-printing', true)
+              }).catch((err) => {
+                this.$emit('start-printing', false)
+                throw err
+              })
+            }
+          }
+        })
+      },
+
       /**
        * 获取打印机数据
        */
