@@ -79,8 +79,8 @@ index.vue -->
 |              |        |       | `options.imageWidth: number. Width of picture.` |
 |              |        |       | `options.imageHeight: number. Height of picture.` |
 | `rotateType` | number |   0   | `Image rotation direction. 0: normal;1: Clockwise;2: Counterclockwise;3: Upside down.` |
-| `imgStyle`   | string |       | `Customize image styles.Width and height can override options.imageWidth and options.imageHeight.Transform will cause rotateType to become invalid;.` |
-| `show`       | boolean| false | `Whether to display preview..` |
+| `imgStyle`   | string |       | `Customize image styles.Width and height can override options.imageWidth and options.imageHeight.Transform will cause rotateType to become invalid.` |
+| `show`       | boolean| false | `Whether to display preview.For debugging.` |
 | `silent`     | boolean| false | `Whether to enable silent printing.` |
 
 
