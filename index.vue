@@ -69,9 +69,10 @@
     },
     data() {
       return {
-        fullPath: process.env.NODE_ENV === 'production' ? path.resolve(__dirname, './node_modules/electron-vue-printer/render.html') : path.join(__dirname, 'render.html'),
+        inited: false,
+        // fullPath: process.env.NODE_ENV === 'production' ? path.resolve(__dirname, './node_modules/electron-vue-printer/render.html') : path.join(__dirname, 'render.html'),
+        fullPath: '',
         deviceNamePrint: '',
-        electronVersion: process.versions.electron,
         srcData: '',
         printerList: [],
         rotateTypeData: [
@@ -86,71 +87,52 @@
       this.getPrinterList();
     },
     mounted() {
-      this.webviewInit()
+      // this.webviewInit()
     },
     methods: {
       /**
        * 初始化webview
        */
-      webviewInit() {
-        if(/^4\./.test(this.electronVersion)) {
-          throw new Error('Does not support electron v4')
-        }
-        const webview = this.$refs.printWebview
-        webview.addEventListener('dom-ready', () => {
-          // webview.openDevTools()
-          this.$emit('webview-ready', webview)
-        })
-        webview.addEventListener('ipc-message', (event) => {
-          if (event.channel === 'webview-render-finish') {
-            this.$emit('webview-render-finish')
-            // 如果electron版本号为v6及以下，则可以使用回调参数
-            if (/^[1-4]{1}\./.test(this.electronVersion)) {
-              webview.print(
-                {
-                  silent: this.silent,
-                  printBackground: true,
-                  deviceName: this.deviceNamePrint
-                },
-                (state) => {
-                  this.$emit('start-printing', state)
-                },
-              )
-            } else if (/^5\./.test(this.electronVersion)) {
-              webview.print(
-                {
-                  silent: this.silent,
-                  printBackground: true,
-                  deviceName: ''
-                },
-                (state) => {
-                  this.$emit('start-printing', state)
-                },
-              )
-            } else if (/^6\./.test(this.electronVersion)) {
-              webview.print(
-                {
-                  silent: this.silent,
-                  printBackground: true,
-                  deviceName: ''
-                },
-              )
-              this.$emit('start-printing', true)
-            } else {
-              webview.print(
-                {
-                  silent: this.silent,
-                  printBackground: true,
-                  deviceName: this.deviceNamePrint
-                },
-              ).then(() => {
-                this.$emit('start-printing', true)
-              }).catch((err) => {
-                this.$emit('start-printing', false)
-                throw err
-              })
+      webviewInit (version) {
+        this.inited = true
+        return new Promise((resolve) => {
+          const webview = this.$refs.printWebview
+          webview.addEventListener('dom-ready', () => {
+            // webview.openDevTools()
+            resolve()
+            this.$emit('webview-ready', webview)
+          })
+          webview.addEventListener('ipc-message', (event) => {
+            if (event.channel === 'webview-render-finish') {
+              this.$emit('webview-render-finish')
+              // 如果electron版本号为v6及以下，则可以使用回调参数
+              if (/^[1-6]{1}\./.test(version)) {
+                webview.print(
+                  {
+                    silent: this.silent,
+                    printBackground: true,
+                    deviceName: this.deviceNamePrint
+                  },
+                  (state) => {
+                    this.$emit('start-printing', state)
+                  },
+                )
+              } else {
+                webview.print(
+                  {
+                    silent: this.silent,
+                    printBackground: true,
+                    deviceName: this.deviceNamePrint
+                  },
+                ).then(() => {
+                  this.$emit('start-printing', true)
+                }).catch((err) => {
+                  this.$emit('start-printing', false)
+                  throw err
+                })
+              }
             }
-          }
+          })
         })
       },
 
@@ -171,27 +153,47 @@
        * 设置打印图片src,自动触发打印
        * @param srcData
        */
-      print(srcData) {
-        this.srcData = srcData
-        this.$nextTick(() => {
-          if (this.$refs.imgRef.complete) {
-            this.$refs.printWebview.send('webview-render', this.$refs.wrapContentRef.outerHTML)
-            this.$emit('webview-render-begin')
-          } else {
-            this.$refs.imgRef.onload = () => {
+      print(srcData, version, NODE_ENV) {
+        if(this.inited) {
+          this.srcData = srcData
+          this.$nextTick(() => {
+            if (this.$refs.imgRef.complete) {
               this.$refs.printWebview.send('webview-render', this.$refs.wrapContentRef.outerHTML)
+              this.$emit('webview-render-begin')
+            } else {
+              this.$refs.imgRef.onload = () => {
+                this.$refs.printWebview.send('webview-render', this.$refs.wrapContentRef.outerHTML)
+              }
             }
+          })
+        }else {
+          if(NODE_ENV === 'production') {
+            this.fullPath = path.resolve(__dirname, './resources/app/node_modules/electron-vue-printer/render.html')
+          }else {
+            this.fullPath = path.resolve(__dirname, './node_modules/electron-vue-printer/render.html')
           }
-        })
+          this.$nextTick(() => {
+            this.webviewInit(version).then(() => {
+              this.srcData = srcData
+              this.$nextTick(() => {
+                if (this.$refs.imgRef.complete) {
+                  this.$refs.printWebview.send('webview-render', this.$refs.wrapContentRef.outerHTML)
+                  this.$emit('webview-render-begin')
+                } else {
+                  this.$refs.imgRef.onload = () => {
+                    this.$refs.printWebview.send('webview-render', this.$refs.wrapContentRef.outerHTML)
+                  }
+                }
+              })
+            })
+          })
+        }
       },
       /**
        * 设置打印机对象
        * @param name callBack
        */
       setPrinterName(name, callBack) {
-        if (/^[5-6]{1}\./.test(this.electronVersion)) {
-          throw new Error('Electron v5 or v6 does not support setting the printer name.Only use the default name')
-        }
         const names = this.printerList.map((e) => {
           return e.name
         })
