@@ -66,7 +66,7 @@ index.vue -->
     },
     methods: {
       webviewReady() {
-        this.$refs.electronVuePrinter.print('https://cdn.pixabay.com/photo/2017/06/10/07/29/printer-2389244_960_720.png', process.versions.electron, process.env.NODE_ENV);
+        this.$refs.electronVuePrinter.print('https://cdn.pixabay.com/photo/2017/06/10/07/29/printer-2389244_960_720.png');
       },
     },
   }
@@ -93,7 +93,7 @@ index.vue -->
 | `start-printing(state: Boolean)`  | `Start printing, and return whether to start printing normally.` |
 
 ### Methods
-* print(`[src,base64]:String, process.versions.electron, process.env.NODE_ENV`) _- Set print picture src(The absolute path of the local picture or the address of the online picture) or base64 to trigger print automatically._
+* print(`[src,base64]:String`) _- Set print picture src(The absolute path of the local picture or the address of the online picture) or base64 to trigger print automatically._
 * setPrinterName(`name:String, callBack(err)`) _- Set the printer device name.If you don't want to use the default printer, you can use it.If err in callBack is not empty, it means the setting failed._
 
 ## License

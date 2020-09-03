@@ -1,6 +1,6 @@
 {
   "name": "electron-vue-printer",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "An electron-vue plugin, silent print pictures。electron-vue可静默打印图片插件。",
   "author": "'Imfdj' <'imfdjjj@gmail.com'>",
   "license": "MIT",
@@ -28,6 +28,7 @@
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
+    "vue-html-loader": "^1.2.4",
     "vue-loader": "^15.2.4",
     "vue-template-compiler": "^2.5.16",
     "webpack": "^4.15.1"
