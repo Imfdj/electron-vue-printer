@@ -182,7 +182,7 @@
       getPrinterList() {
         // 获取打印机列表
         this.printerList = remote.getCurrentWindow().webContents.getPrinters()
-        this.$emit('get-printer-list', this.printerList)
+        this.$emit('get-printer-list', [...this.printerList])
         this.printerList.forEach((v) => {
           if (v.isDefault) {
             this.deviceNamePrint = v.name
@@ -212,7 +212,7 @@
        * 设置打印机对象
        * @param name callBack
        */
-      setPrinterName(name, callBack) {
+      setPrinterName(name, callBack = () => {}) {
         if (/^[5-6]{1}\./.test(this.electronVersion)) {
           throw new Error('Electron v5 or v6 does not support setting the printer name.Only use the default name')
         }
