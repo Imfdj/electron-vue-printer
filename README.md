@@ -35,9 +35,7 @@
 
 
 ### Hint
-* Version number: v3.1.13、 v7.3.2、 v8.5.0、 v9.2.1 perfectly usable.The corresponding minor version number should be the same.
-* Version number: v5.0.13、 v6.1.12 is available, but only the default printer can be used.The corresponding minor version number should be the same.
-* Version v4 has various problems, so support is dropped.
+* Electron version 4 is not supported
 
 #### Installation
 
@@ -52,29 +50,33 @@ yarn add electron-vue-printer -S
 index.vue -->
 <template>
   <div class="index">
+    <button @click="doPrint">doPrint</button>
     <electron-vue-printer
       ref="electronVuePrinter"
+      :show="true"
       :silent="false"
-      @webview-ready="webviewReady"
     ></electron-vue-printer>
   </div>
 </template>
 
 <script>
-  import electronVuePrinter from 'electron-vue-printer'
+import electronVuePrinter from 'electron-vue-printer'
 
-  export default {
-    name: "index",
-    components: {
-      electronVuePrinter
-    },
-    methods: {
-      webviewReady() {
-        this.$refs.electronVuePrinter.print('https://cdn.pixabay.com/photo/2017/06/10/07/29/printer-2389244_960_720.png');
-      },
-    },
+export default {
+  name: 'index',
+  components: {
+    electronVuePrinter
+  },
+  methods: {
+    doPrint () {
+      this.$refs.electronVuePrinter.print('https://cdn.pixabay.com/photo/2017/06/10/07/29/printer-2389244_960_720.png')
+      // or base64
+      // this.$refs.electronVuePrinter.print('data:image/png;base64,iVBORw0KGgoAAAANt7U2lJh......')
+    }
   }
+}
 </script>
+
 ```
 | Configuration | Type  |Default| Description
 | ------------- | ----- | ----- | ----------- |
@@ -90,7 +92,7 @@ index.vue -->
 
 | Events            | Description
 | -------------- | ----------- |
-| `dom-ready(webview)`  | `The webview for the user to render the printed content is ready,And return the dom of the webview.` |
+| `webview-ready(webview)`  | `The webview for the user to render the printed content is ready,And return the dom of the webview.` |
 | `get-printer-list(data: Array)`  | `Return printer list data.Maybe setPrinterName method can use it.` |
 | `webview-render-begin`  | `Print content starts to render.` |
 | `webview-render-finish`  | `The printed content is rendered.` |
